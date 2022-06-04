@@ -39,7 +39,8 @@ class BeatGUI:
                     is_running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     for idx, box in enumerate(boxes):
-                        if box[0].colliderect(event.pos):
+                        print(box)
+                        if box[0].collidepoint(event.pos):
                             coords = box[1]
                             clicked[coords[1]][coords[0]] *= -1
 
@@ -68,10 +69,10 @@ class BeatGUI:
                     color = BeatGUI.__DEF_GREEN
 
                 rect = pygame.draw.rect(self.screen, color,
-                                 [beat * ((self.__width - 200) // self.__beats) + 200 + 5,
-                                  idx * BeatGUI.__DEF_OFFSET - 10,
-                                  (self.__width - 200) // self.__beats,
-                                  (self.__height - 200) // len(self.labels) -10],
+                                 [beat * ((self.__width - 200) // self.__beats) + 205,
+                                  idx * BeatGUI.__DEF_OFFSET + 5,
+                                  (self.__width - 200) // self.__beats - 10,
+                                  (self.__height - 200) // len(self.labels) - 10],
                                  0, 3)
                 pygame.draw.rect(self.screen, BeatGUI.__DEF_GOLD,
                                  [beat * ((self.__width - 200) // self.__beats) + 200,
@@ -79,6 +80,12 @@ class BeatGUI:
                                   (self.__width - 200) // self.__beats,
                                   (self.__height - 200) // len(self.labels)],
                                  5, 5)
+                pygame.draw.rect(self.screen, BeatGUI.__DEF_BLACK,
+                                 [beat * ((self.__width - 200) // self.__beats) + 200,
+                                  idx * BeatGUI.__DEF_OFFSET,
+                                  (self.__width - 200) // self.__beats,
+                                  (self.__height - 200) // len(self.labels)],
+                                 2, 5)
                 boxes.append((rect, (beat, idx)))
 
         return boxes
