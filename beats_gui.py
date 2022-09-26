@@ -1,4 +1,5 @@
 import pygame
+from pygame import mixer
 
 
 class BeatGUI:
@@ -9,6 +10,7 @@ class BeatGUI:
     __DEF_GRAY = (128, 128, 128)
     __DEF_GREEN = (0, 255, 0)
     __DEF_GOLD = (212, 175, 55)
+    __DEF_BLUE = (0, 255, 255)
     __DEF_FPS = 60
     __DEF_OFFSET = 100
     __DEF_BEATS = 8
@@ -18,21 +20,34 @@ class BeatGUI:
         self.__height = height
         self.__fps = fps
         self.__beats = beats
+        self.__bpm = 240
         pygame.init()
         self.screen = pygame.display.set_mode([self.__width, self.__height])
         pygame.display.set_caption('Easy Beats Machine')
         self.label_font = pygame.font.Font('Nasa21-l23X.ttf', 32)
         self.labels = ['Hi Hat', 'Snare', 'Bass Drum', 'Crash', 'Clap', 'Floor Tom']
         self.timer = pygame.time.Clock()
+        self.is_playing = False
+        #load sounds
+        self.__hihat = mixer.Sound('sounds\\hi hat(1).WAV')
+        self.__snare = mixer.Sound('sounds\\snare(1).WAV')
+        self.__bass = mixer.Sound('sounds\\bass (1).WAV')
+        self.__crash = mixer.Sound('sounds\\cymbal (1).WAV')
+        self.__clap = mixer.Sound('sounds\\clap (1).wav(1).WAV')
+        self.__tom = mixer.Sound('sounds\\tom(1).WAV')
 
     def run_gui(self):
         is_running = True
+        self.is_playing = True
         clicked = [[-1 for _ in range(self.__beats)] for _ in self.labels]
+        active_len = 0
+        active_beat = 1
+        beat_changed = True
 
         while is_running:
             self.timer.tick(self.__fps)
             self.screen.fill(BeatGUI.__DEF_BLACK)
-            boxes = self.draw_grid(clicked)
+            boxes = self.draw_grid(clicked, active_beat)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -44,11 +59,25 @@ class BeatGUI:
                             coords = box[1]
                             clicked[coords[1]][coords[0]] *= -1
 
+                beat_len = BeatGUI.__DEF_FPS * 60 // self.__bpm  # the magic number 60 is to convert frames per second to frames per minute
+
+            if self.is_playing:
+                if active_len < beat_len:
+                    active_len += 1
+                else:
+                    active_len = 0
+                    if active_beat < self.__beats - 1:
+                        active_beat += 1
+                        beat_changed = True
+                    else:
+                        active_beat = 0
+                        beat_changed = True
+
             pygame.display.flip()
 
         pygame.quit()
 
-    def draw_grid(self, clicks):
+    def draw_grid(self, clicks, active_beat):
         left_box = pygame.draw.rect(self.screen, BeatGUI.__DEF_GRAY, [0, 0, 200, self.__height - 200], 5)
         btm_box = pygame.draw.rect(self.screen, BeatGUI.__DEF_GRAY, [0, self.__height - 200, self.__width, 200], 5)
         boxes = []
@@ -68,12 +97,13 @@ class BeatGUI:
                 if clicks[idx][beat] == 1:
                     color = BeatGUI.__DEF_GREEN
 
+                # three tiered rectangles
                 rect = pygame.draw.rect(self.screen, color,
-                                 [beat * ((self.__width - 200) // self.__beats) + 205,
-                                  idx * BeatGUI.__DEF_OFFSET + 5,
-                                  (self.__width - 200) // self.__beats - 10,
-                                  (self.__height - 200) // len(self.labels) - 10],
-                                 0, 3)
+                                        [beat * ((self.__width - 200) // self.__beats) + 205,
+                                         idx * BeatGUI.__DEF_OFFSET + 5,
+                                         (self.__width - 200) // self.__beats - 10,
+                                         (self.__height - 200) // len(self.labels) - 10],
+                                        0, 3)
                 pygame.draw.rect(self.screen, BeatGUI.__DEF_GOLD,
                                  [beat * ((self.__width - 200) // self.__beats) + 200,
                                   idx * BeatGUI.__DEF_OFFSET,
@@ -87,5 +117,12 @@ class BeatGUI:
                                   (self.__height - 200) // len(self.labels)],
                                  2, 5)
                 boxes.append((rect, (beat, idx)))
+
+            active = pygame.draw.rect(self.screen, BeatGUI.__DEF_BLUE,
+                                          [active_beat * ((self.__width - 200) // self.__beats) + 200,
+                                           0,
+                                           ((self.__width - 200) // self.__beats),
+                                           len(self.labels) * 100],
+                                          5, 3)
 
         return boxes

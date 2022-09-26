@@ -8,4 +8,3 @@ if __name__ == '__main__':
     gui = beats_gui.BeatGUI()
     gui.run_gui()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
