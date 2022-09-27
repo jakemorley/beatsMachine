@@ -28,13 +28,13 @@ class BeatGUI:
         self.labels = ['Hi Hat', 'Snare', 'Bass Drum', 'Crash', 'Clap', 'Floor Tom']
         self.timer = pygame.time.Clock()
         self.is_playing = False
-        #load sounds
-        self.__hihat = mixer.Sound('sounds\\hi hat(1).WAV')
-        self.__snare = mixer.Sound('sounds\\snare(1).WAV')
+        #load sounds - this should be handled differently
+        self.__hihat = mixer.Sound('sounds\\hi hat (1).WAV')
+        self.__snare = mixer.Sound('sounds\\snare (1).WAV')
         self.__bass = mixer.Sound('sounds\\bass (1).WAV')
         self.__crash = mixer.Sound('sounds\\cymbal (1).WAV')
-        self.__clap = mixer.Sound('sounds\\clap (1).wav(1).WAV')
-        self.__tom = mixer.Sound('sounds\\tom(1).WAV')
+        self.__clap = mixer.Sound('sounds\\clap (1).WAV')
+        self.__tom = mixer.Sound('sounds\\tom (1).WAV')
 
     def run_gui(self):
         is_running = True
@@ -49,6 +49,9 @@ class BeatGUI:
             self.screen.fill(BeatGUI.__DEF_BLACK)
             boxes = self.draw_grid(clicked, active_beat)
 
+            if beat_changed:
+                self.play_notes(clicked, active_beat)
+                beat_changed = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     is_running = False
@@ -126,3 +129,24 @@ class BeatGUI:
                                           5, 3)
 
         return boxes
+
+    def play_notes(self, clicked, active_beat):
+        #'Hi Hat', 'Snare', 'Bass Drum', 'Crash', 'Clap', 'Floor Tom
+        # not a good way to do this, refactor it - you should probably map the labels and the mixers
+        for idx, val in enumerate(clicked):
+            if val[active_beat] == 1:
+                if idx == 0:
+                    self.__hihat.play()
+                if idx == 1:
+                    self.__snare.play()
+                if idx == 2:
+                    self.__bass.play()
+                if idx == 3:
+                    self.__crash.play()
+                if idx == 4:
+                    self.__clap.play()
+                if idx == 5:
+                    self.__tom.play()
+
+
+
