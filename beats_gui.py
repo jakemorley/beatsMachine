@@ -29,12 +29,16 @@ class BeatGUI:
         self.timer = pygame.time.Clock()
         self.is_playing = False
         #load sounds - this should be handled differently
-        self.__hihat = mixer.Sound('sounds\\hi hat (1).WAV')
-        self.__snare = mixer.Sound('sounds\\snare (1).WAV')
-        self.__bass = mixer.Sound('sounds\\bass (1).WAV')
-        self.__crash = mixer.Sound('sounds\\cymbal (1).WAV')
-        self.__clap = mixer.Sound('sounds\\clap (1).WAV')
-        self.__tom = mixer.Sound('sounds\\tom (1).WAV')
+        self.__mixdict = {
+            'Hi Hat': mixer.Sound('sounds\\hi hat (1).WAV'),
+            'Snare': mixer.Sound('sounds\\snare (1).WAV'),
+            'Bass Drum': mixer.Sound('sounds\\bass (1).WAV'),
+            'Crash': mixer.Sound('sounds\\cymbal (1).WAV'),
+            'Clap': mixer.Sound('sounds\\clap (1).WAV'),
+            'Floor Tom': mixer.Sound('sounds\\tom (1).WAV')
+        }
+
+        pygame.mixer.set_num_channels(len(self.labels * 3)) # three channels per instrument
 
     def run_gui(self):
         is_running = True
@@ -62,7 +66,7 @@ class BeatGUI:
                             coords = box[1]
                             clicked[coords[1]][coords[0]] *= -1
 
-                beat_len = BeatGUI.__DEF_FPS * 60 // self.__bpm  # the magic number 60 is to convert frames per second to frames per minute
+            beat_len = BeatGUI.__DEF_FPS * 60 // self.__bpm  # the magic number 60 is to convert frames per second to frames per minute
 
             if self.is_playing:
                 if active_len < beat_len:
@@ -131,22 +135,11 @@ class BeatGUI:
         return boxes
 
     def play_notes(self, clicked, active_beat):
-        #'Hi Hat', 'Snare', 'Bass Drum', 'Crash', 'Clap', 'Floor Tom
-        # not a good way to do this, refactor it - you should probably map the labels and the mixers
         for idx, val in enumerate(clicked):
             if val[active_beat] == 1:
-                if idx == 0:
-                    self.__hihat.play()
-                if idx == 1:
-                    self.__snare.play()
-                if idx == 2:
-                    self.__bass.play()
-                if idx == 3:
-                    self.__crash.play()
-                if idx == 4:
-                    self.__clap.play()
-                if idx == 5:
-                    self.__tom.play()
+                cur_mixer = self.__mixdict[self.labels[idx]]
+                cur_mixer.play()
+
 
 
 
