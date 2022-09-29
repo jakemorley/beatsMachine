@@ -8,6 +8,7 @@ class BeatGUI:
     __DEF_BLACK = (0, 0, 0)
     __DEF_WHITE = (255, 255, 255)
     __DEF_GRAY = (128, 128, 128)
+    __DEF_DARKGRAY = (50, 50, 50)
     __DEF_GREEN = (0, 255, 0)
     __DEF_GOLD = (212, 175, 55)
     __DEF_BLUE = (0, 255, 255)
@@ -25,6 +26,7 @@ class BeatGUI:
         self.screen = pygame.display.set_mode([self.__width, self.__height])
         pygame.display.set_caption('Easy Beats Machine')
         self.label_font = pygame.font.Font('Nasa21-l23X.ttf', 32)
+        self.medium_font = pygame.font.Font('Nasa21-l23X.ttf', 24)
         self.labels = ['Hi Hat', 'Snare', 'Bass Drum', 'Crash', 'Clap', 'Floor Tom']
         self.timer = pygame.time.Clock()
         self.is_playing = False
@@ -52,6 +54,7 @@ class BeatGUI:
             self.timer.tick(self.__fps)
             self.screen.fill(BeatGUI.__DEF_BLACK)
             boxes = self.draw_grid(clicked, active_beat)
+            play_pause = self.draw_menu()
 
             if beat_changed:
                 self.play_notes(clicked, active_beat)
@@ -65,6 +68,14 @@ class BeatGUI:
                         if box[0].collidepoint(event.pos):
                             coords = box[1]
                             clicked[coords[1]][coords[0]] *= -1
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if play_pause.collidepoint(event.pos):
+                        if self.is_playing:
+                            self.is_playing = False
+                        elif not self.is_playing:
+                            self.is_playing=True
+
+
 
             beat_len = BeatGUI.__DEF_FPS * 60 // self.__bpm  # the magic number 60 is to convert frames per second to frames per minute
 
@@ -133,6 +144,24 @@ class BeatGUI:
                                           5, 3)
 
         return boxes
+
+    def draw_menu(self):
+        play_pause = pygame.draw.rect(self.screen, BeatGUI.__DEF_GRAY,
+                                      [50,
+                                       self.__height - 150,
+                                       200,
+                                       100
+                                      ],
+                                      0, 5)
+        play_text = self.label_font.render('Play/Pause', True, BeatGUI.__DEF_WHITE)
+        self.screen.blit(play_text, (70, self.__height -130))
+        if self.is_playing:
+            lower_play_text = self.medium_font.render('Playing', True, BeatGUI.__DEF_DARKGRAY)
+        else:
+            lower_play_text = self.medium_font.render('Paused', True, BeatGUI.__DEF_DARKGRAY)
+        self.screen.blit(lower_play_text, (80, self.__height - 100))
+        return play_pause
+
 
     def play_notes(self, clicked, active_beat):
         for idx, val in enumerate(clicked):
