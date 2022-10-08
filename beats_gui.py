@@ -154,7 +154,20 @@ class BeatGUI:
                                       ],
                                       0, 5)
         play_text = self.label_font.render('Play/Pause', True, BeatGUI.__DEF_WHITE)
-        self.screen.blit(play_text, (70, self.__height -130))
+
+        bpm_rect = pygame.draw.rect(self.screen, BeatGUI.__DEF_GRAY,
+                                    [300,
+                                     self.__height - 150,
+                                     200,
+                                     100
+                                    ],
+                                    5, 5)
+        bpm_text = self.medium_font.render('Beats Per Minute', True, BeatGUI.__DEF_WHITE)
+        bp_text2 = self.label_font.render(f'{self.__bpm}', True, BeatGUI.__DEF_WHITE)
+
+        self.screen.blit(play_text, (70, self.__height - 130))
+        self.screen.blit(bpm_text, (308, self.__height - 130))
+        self.screen.blit(bp_text2, (370, self.__height - 100))
         if self.is_playing:
             lower_play_text = self.medium_font.render('Playing', True, BeatGUI.__DEF_DARKGRAY)
         else:
